@@ -11,738 +11,1192 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<title>SAP OEE iPhone - Cold Chamber</title>
+<title>SAP OEE Mobile - Cold Chamber Die Casting</title>
 <style>
- :root {
-   --bg: #090d16; --card: #151e2e; --card2: #0f172a; --border: #293548;
-   --text: #f8fafc; --muted: #94a3b8; --primary: #3b82f6; --accent: #a855f7;
-   --success: #10b981; --warn: #f59e0b; --danger: #ef4444;
- }
- * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
- body {
-   margin: 0;
-   padding: calc(env(safe-area-inset-top, 12px) + 8px) 12px calc(env(safe-area-inset-bottom, 20px) + 78px) 12px;
-   background: var(--bg); color: var(--text); user-select: none;
- }
- /* Header & Selectors */
- .app-header { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
- .app-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
- .app-title h1 { margin: 0; font-size: 15px; color: #60a5fa; font-weight: 800; }
- .author-pill {
-   font-size: 10.5px; font-weight: 700; color: #e2e8f0;
-   background: linear-gradient(135deg, #1e293b, #0f172a);
-   border: 1px solid #475569; padding: 3px 9px; border-radius: 20px;
- }
- .sub-caption { font-size: 10.5px; color: var(--muted); margin-bottom: 10px; }
- .machine-row { margin-bottom: 7px; }
- .machine-select {
-   width: 100%; padding: 8px 10px; background: #1e3a8a !important;
-   border: 1px solid #3b82f6 !important; color: #93c5fd !important;
-   border-radius: 10px; font-size: 16px; font-weight: 800; text-align: center;
- }
- .date-bar { display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 6px; }
- /* 16px font-size prevents iOS Safari auto-zoom on tap */
- input, select {
-   width: 100%; background: var(--card2); color: #fff; border: 1px solid var(--border);
-   border-radius: 9px; padding: 7px 6px; font-size: 16px; font-weight: 700; text-align: center;
- }
- input:focus, select:focus { outline: 1px solid var(--primary); }
- /* Horizontal Swipeable Days Ribbon (1 - 30/31) */
- .days-strip-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 8px 10px; margin-bottom: 10px; }
- .strip-label { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--muted); margin-bottom: 6px; }
- .days-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
- .days-strip::-webkit-scrollbar { display: none; }
- .day-pill {
-   min-width: 44px; padding: 6px 4px; border-radius: 10px; background: var(--card2);
-   border: 1px solid var(--border); text-align: center; flex-shrink: 0; cursor: pointer;
- }
- .day-pill.active { background: var(--primary); border-color: #93c5fd; color: #fff; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
- .day-pill.has-data { border-bottom: 3px solid var(--success); }
- .day-pill b { display: block; font-size: 13px; }
- .day-pill small { display: block; font-size: 9.5px; margin-top: 2px; opacity: 0.9; }
- /* Dual KPI Cards (Daily vs Cumulative) */
- .kpi-stack { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; }
- .kpi-panel { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 11px; }
- .kpi-panel.cum { border-color: rgba(168,85,247,0.5); background: linear-gradient(180deg, rgba(168,85,247,0.09), var(--card)); }
- .kpi-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
- .kpi-grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
- .kpi-mini { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 7px 4px; text-align: center; }
- .kpi-mini .lbl { font-size: 9.5px; color: var(--muted); }
- .kpi-mini .val { font-size: 15.5px; font-weight: 800; margin: 2px 0; }
- .kpi-mini .sub { font-size: 8.5px; color: var(--muted); }
- /* Shift 420m Mini Bars */
- .shift-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 12px; }
- .shift-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px; text-align: center; }
- .shift-box .sh-title { font-size: 11.5px; font-weight: 700; color: #93c5fd; }
- .shift-box .sh-time { font-size: 9.5px; color: var(--muted); margin: 3px 0; }
- .shift-box .sh-oee { font-size: 15px; font-weight: 800; }
- /* Mobile Run Cards */
- .run-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-bottom: 10px; }
- .run-top { display: grid; grid-template-columns: 95px 1fr 34px; gap: 6px; margin-bottom: 8px; align-items: center; }
- .run-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-bottom: 8px; }
- .field-box { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: 5px 6px; }
- .field-box label { display: block; font-size: 9px; color: var(--muted); margin-bottom: 2px; text-align: center; }
- .field-box input { border: none; padding: 2px 0; background: transparent; height: 24px; }
- .run-results {
-   display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
-   background: var(--card2); border-radius: 10px; padding: 7px 4px; text-align: center; font-size: 9.5px;
- }
- .run-results b { display: block; font-size: 12.5px; margin-top: 2px; }
- /* Buttons & Chips */
- .btn { width: 100%; border: none; border-radius: 11px; padding: 11px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
- .btn-primary { background: var(--primary); color: #fff; }
- .btn-success { background: var(--success); color: #fff; }
- .btn-purple { background: var(--accent); color: #fff; }
- .btn-secondary { background: #334155; color: #f1f5f9; }
- .btn-danger { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
- .del-btn { height: 36px; border: none; border-radius: 8px; background: rgba(239,68,68,0.2); color: #f87171; font-weight: 800; }
- .quick-models { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
- .model-chip { flex-shrink: 0; background: var(--card); border: 1px solid var(--border); padding: 6px 10px; border-radius: 20px; font-size: 11.5px; color: #e2e8f0; cursor: pointer; }
- /* Tabs Visibility */
- .tab-view { display: none; }
- .tab-view.active { display: block; }
- /* Bottom iOS Navigation Bar */
- .bottom-nav {
-   position: fixed; bottom: 0; right: 0; left: 0;
-   background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(10px);
-   border-top: 1px solid var(--border);
-   display: grid; grid-template-columns: repeat(4, 1fr);
-   padding: 6px 8px calc(env(safe-area-inset-bottom, 10px) + 4px) 8px;
-   z-index: 999;
- }
- .nav-item { background: none; border: none; color: var(--muted); font-size: 10.5px; font-weight: 700; padding: 6px 2px; border-radius: 10px; }
- .nav-item.active { color: #60a5fa; background: rgba(59,130,246,0.12); }
- .nav-icon { display: block; font-size: 16px; margin-bottom: 2px; }
- table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
- th, td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--border); }
- th { color: var(--muted); background: var(--card2); }
+  :root {
+    --bg: #090d16; --card: #151e2e; --card2: #0f172a; --border: #293548;
+    --text: #f8fafc; --muted: #94a3b8; --primary: #3b82f6; --accent: #a855f7;
+    --success: #10b981; --warn: #f59e0b; --danger: #ef4444;
+  }
+  * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    padding: calc(env(safe-area-inset-top, 12px) + 8px) 10px calc(env(safe-area-inset-bottom, 20px) + 82px) 10px;
+    background: var(--bg); color: var(--text); user-select: none;
+  }
+
+  /* Header & Selectors */
+  .app-header { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 12px; margin-bottom: 10px; }
+  .app-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 6px; }
+  .app-title h1 { margin: 0; font-size: 14.5px; color: #60a5fa; font-weight: 800; }
+  .author-pill {
+    font-size: 10px; font-weight: 700; color: #e2e8f0;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #475569; padding: 3px 9px; border-radius: 20px;
+  }
+  .sub-caption { font-size: 10px; color: var(--muted); margin-bottom: 9px; line-height: 1.35; }
+
+  .machine-row { margin-bottom: 7px; }
+  .machine-select {
+    width: 100%; padding: 8px 10px; background: #1e3a8a !important;
+    border: 1px solid #3b82f6 !important; color: #93c5fd !important;
+    border-radius: 10px; font-size: 16px; font-weight: 800; text-align: center;
+  }
+
+  .date-bar { display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 6px; }
+  /* 16px font-size prevents iOS Safari auto-zoom on tap */
+  input, select {
+    width: 100%; background: var(--card2); color: #fff; border: 1px solid var(--border);
+    border-radius: 9px; padding: 7px 6px; font-size: 16px; font-weight: 700; text-align: center;
+  }
+  input:focus, select:focus { outline: 1px solid var(--primary); }
+
+  /* Horizontal Swipeable Days Ribbon (1 - 30/31) */
+  .days-strip-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 8px 10px; margin-bottom: 10px; }
+  .strip-label { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+  .days-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .days-strip::-webkit-scrollbar { display: none; }
+  .day-pill {
+    min-width: 44px; padding: 6px 4px; border-radius: 10px; background: var(--card2);
+    border: 1px solid var(--border); text-align: center; flex-shrink: 0; cursor: pointer;
+  }
+  .day-pill.active { background: var(--primary); border-color: #93c5fd; color: #fff; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
+  .day-pill.has-data { border-bottom: 3px solid var(--success); }
+  .day-pill b { display: block; font-size: 13px; }
+  .day-pill small { display: block; font-size: 9.5px; margin-top: 2px; opacity: 0.9; }
+
+  /* Dual KPI Cards (Daily vs Cumulative) */
+  .kpi-stack { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
+  .kpi-panel { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 11px; }
+  .kpi-panel.cum { border-color: rgba(168,85,247,0.5); background: linear-gradient(180deg, rgba(168,85,247,0.09), var(--card)); }
+  .kpi-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; margin-bottom: 8px; flex-wrap: wrap; gap: 4px; }
+  .kpi-grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .kpi-mini { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 7px 4px; text-align: center; }
+  .kpi-mini .lbl { font-size: 9.5px; color: var(--muted); }
+  .kpi-mini .val { font-size: 15px; font-weight: 800; margin: 2px 0; }
+  .kpi-mini .sub { font-size: 8.5px; color: var(--muted); }
+
+  /* Shift Net Planned Time Mini Bars (450 / 415 / 400) */
+  .shift-pills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+  .shift-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px 6px; text-align: center; }
+  .shift-box .sh-title { font-size: 11px; font-weight: 700; color: #93c5fd; }
+  .shift-box .sh-time { font-size: 9.5px; color: var(--muted); margin: 3px 0; }
+  .shift-box .sh-oee { font-size: 15px; font-weight: 800; }
+
+  /* Mobile Run Cards */
+  .run-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 11px; margin-bottom: 10px; }
+  .run-top { display: grid; grid-template-columns: 118px 1fr 34px; gap: 6px; margin-bottom: 8px; align-items: center; }
+  .run-inputs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+  .field-box { background: var(--card2); border: 1px solid var(--border); border-radius: 9px; padding: 5px 5px; }
+  .field-box label { display: block; font-size: 8.8px; color: var(--muted); margin-bottom: 2px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .field-box input { border: none; padding: 2px 0; background: transparent; height: 24px; }
+
+  /* Touch Multi-Select Chips inside Run Card */
+  .reason-box { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 7px 8px; margin-bottom: 7px; }
+  .reason-title { font-size: 9.5px; font-weight: 700; color: var(--muted); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+  .reason-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .r-chip {
+    padding: 4px 9px; border-radius: 16px; font-size: 10.5px; font-weight: 600;
+    background: #1e293b; border: 1px solid #334155; color: #cbd5e1; cursor: pointer; transition: 0.12s;
+  }
+  .r-chip.active-bd { background: rgba(59,130,246,0.25); border-color: #3b82f6; color: #93c5fd; font-weight: 700; }
+  .r-chip.active-st { background: rgba(245,158,11,0.22); border-color: #f59e0b; color: #fde68a; font-weight: 700; }
+
+  .run-results {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px;
+    background: var(--card2); border-radius: 10px; padding: 7px 4px; text-align: center; font-size: 9.5px;
+  }
+  .run-results b { display: block; font-size: 12.5px; margin-top: 2px; }
+
+  /* Loss Pills */
+  .loss-pills-wrap { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .loss-pill { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 5px 8px; font-size: 10.5px; color: var(--muted); }
+  .loss-pill b { color: #f8fafc; }
+
+  /* Buttons & Chips */
+  .btn { width: 100%; border: none; border-radius: 11px; padding: 11px; font-size: 13.5px; font-weight: 700; cursor: pointer; margin-bottom: 8px; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-purple { background: var(--accent); color: #fff; }
+  .btn-secondary { background: #334155; color: #f1f5f9; }
+  .btn-danger { background: rgba(239,68,68,0.18); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+  .del-btn { height: 36px; border: none; border-radius: 8px; background: rgba(239,68,68,0.2); color: #f87171; font-weight: 800; }
+
+  .quick-models { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 10px; }
+  .model-chip { flex-shrink: 0; background: var(--card); border: 1px solid var(--border); padding: 6px 10px; border-radius: 20px; font-size: 11.5px; color: #e2e8f0; cursor: pointer; }
+
+  /* Tabs Visibility */
+  .tab-view { display: none; }
+  .tab-view.active { display: block; }
+
+  /* Bottom iOS Navigation Bar (5 Tabs) */
+  .bottom-nav {
+    position: fixed; bottom: 0; right: 0; left: 0;
+    background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    padding: 6px 4px calc(env(safe-area-inset-bottom, 10px) + 4px) 4px;
+    z-index: 999;
+  }
+  .nav-item { background: none; border: none; color: var(--muted); font-size: 9.8px; font-weight: 700; padding: 5px 2px; border-radius: 10px; }
+  .nav-item.active { color: #60a5fa; background: rgba(59,130,246,0.12); }
+  .nav-icon { display: block; font-size: 15px; margin-bottom: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th, td { padding: 7px 3px; text-align: center; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); background: var(--card2); }
 </style>
 </head>
 <body>
-<!-- Header & Machine/Date Validation -->
-<div class="app-header">
-<div class="app-title">
-<h1>SAP OEE - Cold Chamber</h1>
-<span class="author-pill">Created by Eng. Ahmed Osama</span>
-</div>
-<div class="sub-caption">SAP Shift = 420 min • Target = 80% • Auto-Save per Machine & Day</div>
-<div class="machine-row">
-<select id="selMachine" class="machine-select" onchange="onMachineChange()"></select>
-</div>
-<div class="date-bar">
-<select id="selYear" onchange="onDateChange()"></select>
-<select id="selMonth" onchange="onDateChange()"></select>
-<select id="selDay" onchange="onDayChange()"></select>
-</div>
-</div>
-<!-- Swipeable Days Ribbon (1 - 30/31) -->
-<div class="days-strip-wrap">
-<div class="strip-label">
-<span>Swipe to select Day (Green = Recorded):</span>
-<span id="monthSummaryTxt" style="color:#60a5fa;font-weight:700"></span>
-</div>
-<div class="days-strip" id="daysStrip"></div>
-</div>
-<!-- TAB 1: Daily Input & KPIs -->
-<div id="tab-daily" class="tab-view active">
-<div class="kpi-stack">
-<div class="kpi-panel">
-<div class="kpi-head">
-<span id="dailyTitle" style="color:#60a5fa">Selected Day OEE</span>
-<span id="dailySub" style="font-size:10px;color:var(--muted)"></span>
-</div>
-<div class="kpi-grid4" id="dailyKPIs"></div>
-</div>
-<div class="kpi-panel cum">
-<div class="kpi-head">
-<span id="cumTitle" style="color:#c084fc">Cumulative OEE (Day 1 to Selected)</span>
-<span id="cumSub" style="font-size:10px;color:var(--muted)"></span>
-</div>
-<div class="kpi-grid4" id="cumKPIs"></div>
-</div>
-</div>
-<!-- 3 Shifts Summary (420 min limit) -->
-<div class="shift-pills" id="shiftsBar"></div>
-<!-- Saved Models Quick Chips -->
-<div class="quick-models" id="quickModelsBar"></div>
-<!-- Daily Runs Cards -->
-<div id="runsContainer"></div>
-<button class="btn btn-primary" onclick="addRow()">+ Add Model / Run to This Day</button>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<button class="btn btn-secondary" onclick="copyPrevDay()">Copy Previous Day</button>
-<button class="btn btn-danger" onclick="clearDay()">Clear This Day</button>
-</div>
-</div>
-<!-- TAB 2: Time Series & Trend Line Chart -->
-<div id="tab-chart" class="tab-view">
-<div class="kpi-panel" style="margin-bottom:12px;">
-<div class="kpi-head">
-<span id="chartHeaderTitle" style="color:#38bdf8">Time Series & Trend Line</span>
-<select id="chartScope" onchange="renderChart()" style="width:140px;font-size:12px;padding:4px;">
-<option value="upto">Day 1 to Selected</option>
-<option value="all">Full Month (1-30)</option>
-</select>
-</div>
-<div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap;">
-<span>🟦 Daily OEE %</span>
-<span>🟧 Trend Line</span>
-<span>🟩 Target (80%)</span>
-</div>
-<div id="mobileChartBox" style="width:100%;height:240px;"></div>
-</div>
-</div>
-<!-- TAB 3: Full Month Log (Day 1 to 30/31) -->
-<div id="tab-month" class="tab-view">
-<div class="kpi-panel" style="overflow-x:auto;">
-<div class="kpi-head">
-<span id="monthLogTitle">Monthly Summary Log (Tap any day to open)</span>
-</div>
-<table>
-<thead>
-<tr>
-<th>Day</th>
-<th>Plan</th>
-<th>Net</th>
-<th>Prod.</th>
-<th>Scrap</th>
-<th>Day OEE</th>
-<th style="color:#d8b4fe">Cum. OEE</th>
-</tr>
-</thead>
-<tbody id="monthTableBody"></tbody>
-</table>
-</div>
-</div>
-<!-- TAB 4: Models Library & iPhone Data Save/Backup -->
-<div id="tab-settings" class="tab-view">
-<div class="kpi-panel" style="margin-bottom:12px;">
-<div class="kpi-head"><span style="color:#34d399">Save & Backup Data on iPhone</span></div>
-<p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;line-height:1.45">Everything is saved automatically on this iPhone and works offline. Tap <b>Export Backup</b> regularly and keep the file in Files / iCloud Drive.</p>
-<button class="btn btn-success" onclick="exportCSV()">📊 Export Month to Excel (CSV)</button>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-<button class="btn btn-secondary" onclick="exportJSON()">Export Backup (.json)</button>
-<button class="btn btn-secondary" onclick="document.getElementById('fileIn').click()">Restore Backup</button>
-</div>
-<input type="file" id="fileIn" style="display:none" accept=".json" onchange="importJSON(event)">
-</div>
-<div class="kpi-panel">
-<div class="kpi-head"><span>Saved Models Library (SAP min/pc)</span></div>
-<div style="display:grid;grid-template-columns:1.3fr 1fr auto;gap:6px;margin-bottom:10px;">
-<input type="text" id="mName" placeholder="Model Code">
-<input type="number" step="0.01" inputmode="decimal" id="mTime" placeholder="SAP (e.g. 1.27)">
-<button class="btn btn-primary" style="margin:0;padding:0 14px;width:auto" onclick="addModelPreset()">+</button>
-</div>
-<div id="modelsManageList"></div>
-</div>
-</div>
-<!-- Bottom iOS Tab Bar -->
-<div class="bottom-nav">
-<button class="nav-item active" onclick="switchTab('daily', this)">
-<span class="nav-icon">⚙️</span>Daily & Shifts
-</button>
-<button class="nav-item" onclick="switchTab('chart', this)">
-<span class="nav-icon">📈</span>Time Series
-</button>
-<button class="nav-item" onclick="switchTab('month', this)">
-<span class="nav-icon">📅</span>Month Log
-</button>
-<button class="nav-item" onclick="switchTab('settings', this)">
-<span class="nav-icon">💾</span>Models & Save
-</button>
-</div>
+
+  <!-- Header & Machine/Date Validation -->
+  <div class="app-header">
+    <div class="app-title">
+      <h1>SAP OEE - Cold Chamber</h1>
+      <span class="author-pill">Created by Eng. Ahmed Osama</span>
+    </div>
+    <div class="sub-caption">Net Planned: Shift A = 450m • Shift B = 415m • Shift C = 400m • Target = 80%</div>
+    <div class="machine-row">
+      <select id="selMachine" class="machine-select" onchange="onMachineChange()"></select>
+    </div>
+    <div class="date-bar">
+      <select id="selYear" onchange="onDateChange()"></select>
+      <select id="selMonth" onchange="onDateChange()"></select>
+      <select id="selDay" onchange="onDayChange()"></select>
+    </div>
+  </div>
+
+  <!-- Swipeable Days Ribbon (1 - 30/31) -->
+  <div class="days-strip-wrap">
+    <div class="strip-label">
+      <span>Swipe to select Day (Green = Recorded):</span>
+      <span id="monthSummaryTxt" style="color:#60a5fa;font-weight:700"></span>
+    </div>
+    <div class="days-strip" id="daysStrip"></div>
+  </div>
+
+  <!-- TAB 1: Daily Input & KPIs -->
+  <div id="tab-daily" class="tab-view active">
+    <div class="kpi-stack">
+      <div class="kpi-panel">
+        <div class="kpi-head">
+          <span id="dailyTitle" style="color:#60a5fa">Selected Day OEE</span>
+          <span id="dailySub" style="font-size:10px;color:var(--muted)"></span>
+        </div>
+        <div class="kpi-grid4" id="dailyKPIs"></div>
+      </div>
+
+      <div class="kpi-panel cum">
+        <div class="kpi-head">
+          <span id="cumTitle" style="color:#c084fc">Cumulative OEE (Day 1 to Selected)</span>
+          <span id="cumSub" style="font-size:10px;color:var(--muted)"></span>
+        </div>
+        <div class="kpi-grid4" id="cumKPIs"></div>
+      </div>
+    </div>
+
+    <!-- 3 Shifts Summary (A:450m, B:415m, C:400m) -->
+    <div class="shift-pills" id="shiftsBar"></div>
+
+    <!-- Saved Models Quick Chips -->
+    <div class="quick-models" id="quickModelsBar"></div>
+
+    <!-- Daily Runs Cards -->
+    <div id="runsContainer"></div>
+
+    <button class="btn btn-primary" onclick="addRow()">+ Add Model / Run to This Day</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <button class="btn btn-secondary" onclick="copyPrevDay()">Copy Previous Day</button>
+      <button class="btn btn-danger" onclick="clearDay()">Clear This Day</button>
+    </div>
+  </div>
+
+  <!-- TAB 2: Time Series & Trend Line Chart -->
+  <div id="tab-chart" class="tab-view">
+    <div class="kpi-panel" style="margin-bottom:12px;">
+      <div class="kpi-head">
+        <span id="chartHeaderTitle" style="color:#38bdf8">Time Series & Trend Line</span>
+        <select id="chartScope" onchange="renderChart()" style="width:140px;font-size:12px;padding:4px;">
+          <option value="upto">Day 1 to Selected</option>
+          <option value="all">Full Month (1-30)</option>
+        </select>
+      </div>
+      <div style="font-size:10.5px;color:var(--muted);margin-bottom:8px;display:flex;gap:12px;flex-wrap:wrap;">
+        <span>🟦 Daily OEE %</span>
+        <span>🟧 Trend Line</span>
+        <span>🟩 Target (80%)</span>
+      </div>
+      <div id="mobileChartBox" style="width:100%;height:245px;"></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Monthly Loss Analysis (Stoppage Pareto + Breakdown X-Bar) -->
+  <div id="tab-loss" class="tab-view">
+    <div class="kpi-panel" style="margin-bottom:12px;">
+      <div class="kpi-head">
+        <span id="mParetoTitle" style="color:#f59e0b">Stoppage Pareto Chart (Month Hours & Cum %)</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap;">
+        <span>🟧 Stoppage (Hours)</span>
+        <span>🟦 Cumulative %</span>
+        <span>🟥 80% Cut-off</span>
+      </div>
+      <div id="mobileParetoBox" style="width:100%;height:245px;"></div>
+      <div class="loss-pills-wrap" id="mobileParetoPills"></div>
+    </div>
+
+    <div class="kpi-panel" style="margin-bottom:12px;">
+      <div class="kpi-head">
+        <span id="mBreakdownTitle" style="color:#f87171">Breakdown X-Bar Chart (Hours & Share %)</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap;">
+        <span>🟦 Mechanical</span>
+        <span>🟪 Electrical</span>
+        <span>🟩 X-Bar (Avg Hours)</span>
+      </div>
+      <div id="mobileBreakdownBox" style="width:100%;height:230px;"></div>
+      <div class="loss-pills-wrap" id="mobileBreakdownPills"></div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Full Month Log (Day 1 to 30/31 + Month Total) -->
+  <div id="tab-month" class="tab-view">
+    <div class="kpi-panel" style="overflow-x:auto;">
+      <div class="kpi-head">
+        <span id="monthLogTitle">Monthly Summary Log (Tap any day to open)</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Net Plan</th>
+            <th>Net Run</th>
+            <th>Prod.</th>
+            <th>Scrap</th>
+            <th>Day OEE</th>
+            <th style="color:#d8b4fe">Cum. OEE</th>
+          </tr>
+        </thead>
+        <tbody id="monthTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB 5: Models Library & iPhone Data Save/Backup -->
+  <div id="tab-settings" class="tab-view">
+    <div class="kpi-panel" style="margin-bottom:12px;">
+      <div class="kpi-head"><span style="color:#34d399">Save & Backup Data on Mobile</span></div>
+      <p style="font-size:11.5px;color:var(--muted);margin:0 0 10px;line-height:1.45">Everything is saved automatically on this device and works offline. Tap <b>Export Backup</b> regularly and keep the file in Files / iCloud Drive.</p>
+            <button class="btn btn-success" onclick="exportCSV()">📊 Export Month to Excel (CSV)</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="btn btn-secondary" onclick="exportJSON()">Export Backup (.json)</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('fileIn').click()">Restore Backup</button>
+      </div>
+      <input type="file" id="fileIn" style="display:none" accept=".json" onchange="importJSON(event)">
+    </div>
+
+    <div class="kpi-panel">
+      <div class="kpi-head"><span>Saved Models Library (SAP min/pc)</span></div>
+      <div style="display:grid;grid-template-columns:1.3fr 1fr auto;gap:6px;margin-bottom:10px;">
+        <input type="text" id="mName" placeholder="Model Code">
+        <input type="number" step="0.01" inputmode="decimal" id="mTime" placeholder="SAP (e.g. 1.27)">
+        <button class="btn btn-primary" style="margin:0;padding:0 14px;width:auto" onclick="addModelPreset()">+</button>
+      </div>
+      <div id="modelsManageList"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar (5 Tabs) -->
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('daily', this)">
+      <span class="nav-icon">⚙️</span>Daily
+    </button>
+    <button class="nav-item" onclick="switchTab('chart', this)">
+      <span class="nav-icon">📈</span>Time Series
+    </button>
+    <button class="nav-item" onclick="switchTab('loss', this)">
+      <span class="nav-icon">📊</span>Loss Analysis
+    </button>
+    <button class="nav-item" onclick="switchTab('month', this)">
+      <span class="nav-icon">📅</span>Month Log
+    </button>
+    <button class="nav-item" onclick="switchTab('settings', this)">
+      <span class="nav-icon">💾</span>Save/Models
+    </button>
+  </div>
+
 <script id="embeddedStateScript">
 window.__EMBEDDED_STATE__ = null;
 </script>
+
 <script>
-const SHIFT_LIMIT = 420;
+const SHIFT_LIMITS = {
+  "A": 450,
+  "B": 415,
+  "C": 400
+};
+function getShiftLimit(shiftCode) {
+  return SHIFT_LIMITS[shiftCode] || 450;
+}
+
 const TARGET_OEE = 80;
 const KEY_DB = "SAP_OEE_MONTHLY_DB_V1";
 const KEY_MODELS = "SAP_OEE_MODELS_V1";
 const KEY_DATE = "SAP_OEE_LAST_DATE_V1";
+
 const machinesList = [
- "Taiwanese 1",
- "Taiwanese 4",
- "Taiwanese 5",
- "Taiwanese 6",
- "Japanese"
+  "Taiwanese 1",
+  "Taiwanese 4",
+  "Taiwanese 5",
+  "Taiwanese 6",
+  "Japanese"
 ];
+
+const BREAKDOWN_OPTIONS = [
+  "Mechanical",
+  "Electrical"
+];
+
+const STOPPAGE_OPTIONS = [
+  "Adding Powder",
+  "Supplying Raw Mat.",
+  "Mold Maint.",
+  "Mold Change",
+  "Raw Mat. Leak",
+  "Raw Mat. Wait",
+  "Furnace Filling",
+  "Furnace Emptying"
+];
+
 const arToEnMachineMap = {
- "تيواني 1": "Taiwanese 1",
- "تيواني 4": "Taiwanese 4",
- "تيواني 5": "Taiwanese 5",
- "تيواني 6": "Taiwanese 6",
- "ياباني": "Japanese"
+  "تيواني 1": "Taiwanese 1",
+  "تيواني 4": "Taiwanese 4",
+  "تيواني 5": "Taiwanese 5",
+  "تيواني 6": "Taiwanese 6",
+  "ياباني": "Japanese"
 };
+
 const monthsEn = [
- "1 - January","2 - February","3 - March","4 - April","5 - May","6 - June",
- "7 - July","8 - August","9 - September","10 - October","11 - November","12 - December"
+  "1 - January","2 - February","3 - March","4 - April","5 - May","6 - June",
+  "7 - July","8 - August","9 - September","10 - October","11 - November","12 - December"
 ];
+
 let rawDb = (window.__EMBEDDED_STATE__ && window.__EMBEDDED_STATE__.db) || JSON.parse(localStorage.getItem(KEY_DB) || "null") || {};
 let db = {};
 machinesList.forEach(m => { db[m] = {}; });
+
 const oldMonthKeys = Object.keys(rawDb).filter(k => /^\d{4}-\d{2}$/.test(k));
 if (oldMonthKeys.length > 0) {
- oldMonthKeys.forEach(k => { db["Taiwanese 5"][k] = rawDb[k]; });
+  oldMonthKeys.forEach(k => { db["Taiwanese 5"][k] = rawDb[k]; });
 }
 Object.keys(rawDb).forEach(k => {
- if (/^\d{4}-\d{2}$/.test(k)) return;
- const mapped = arToEnMachineMap[k] || (machinesList.includes(k) ? k : null);
- if (mapped && rawDb[k] && typeof rawDb[k] === "object") {
-   Object.keys(rawDb[k]).forEach(mk => { db[mapped][mk] = rawDb[k][mk]; });
- }
+  if (/^\d{4}-\d{2}$/.test(k)) return;
+  const mapped = arToEnMachineMap[k] || (machinesList.includes(k) ? k : null);
+  if (mapped && rawDb[k] && typeof rawDb[k] === "object") {
+    Object.keys(rawDb[k]).forEach(mk => { db[mapped][mk] = rawDb[k][mk]; });
+  }
 });
 if (
- db["Taiwanese 1"] && Object.keys(db["Taiwanese 1"]).length > 0 &&
- (!db["Taiwanese 5"] || Object.keys(db["Taiwanese 5"]).length === 0)
+  db["Taiwanese 1"] && Object.keys(db["Taiwanese 1"]).length > 0 &&
+  (!db["Taiwanese 5"] || Object.keys(db["Taiwanese 5"]).length === 0)
 ) {
- db["Taiwanese 5"] = db["Taiwanese 1"];
- db["Taiwanese 1"] = {};
+  db["Taiwanese 5"] = db["Taiwanese 1"];
+  db["Taiwanese 1"] = {};
 }
+
+// Move Taiwanese 4 data from Month 9 (September) to Month 10 (October)
+if (db["Taiwanese 4"]) {
+  Object.keys(db["Taiwanese 4"]).forEach(mKey => {
+    const match = mKey.match(/^(\d{4})-09$/);
+    if (match && db["Taiwanese 4"][mKey] && Object.keys(db["Taiwanese 4"][mKey]).length > 0) {
+      const octKey = `${match[1]}-10`;
+      if (!db["Taiwanese 4"][octKey]) db["Taiwanese 4"][octKey] = {};
+      Object.keys(db["Taiwanese 4"][mKey]).forEach(dayKey => {
+        if (!db["Taiwanese 4"][octKey][dayKey] || db["Taiwanese 4"][octKey][dayKey].length === 0) {
+          db["Taiwanese 4"][octKey][dayKey] = db["Taiwanese 4"][mKey][dayKey];
+        } else {
+          db["Taiwanese 4"][octKey][dayKey] = db["Taiwanese 4"][octKey][dayKey].concat(db["Taiwanese 4"][mKey][dayKey]);
+        }
+      });
+      delete db["Taiwanese 4"][mKey];
+    }
+  });
+}
+
+// Migrate historical 420-min records to Net Planned Time per shift (A=450, B=415, C=400)
+function migrateHistoricalShiftPlannedTimes(databaseObj) {
+  if (!databaseObj || typeof databaseObj !== "object") return;
+  Object.keys(databaseObj).forEach(mach => {
+    const machData = databaseObj[mach];
+    if (!machData || typeof machData !== "object") return;
+    Object.keys(machData).forEach(mKey => {
+      const monthData = machData[mKey];
+      if (!monthData || typeof monthData !== "object") return;
+      Object.keys(monthData).forEach(dayKey => {
+        const dayRows = monthData[dayKey];
+        if (!Array.isArray(dayRows)) return;
+        dayRows.forEach(r => {
+          const shiftCode = r.shift || "A";
+          if (!r.planned || Number(r.planned) === 420) {
+            r.planned = getShiftLimit(shiftCode);
+          }
+          if (!Array.isArray(r.breakdownTypes)) r.breakdownTypes = [];
+          if (!Array.isArray(r.stoppageTypes)) r.stoppageTypes = [];
+        });
+      });
+    });
+  });
+}
+migrateHistoricalShiftPlannedTimes(db);
+
 let savedModels = (window.__EMBEDDED_STATE__ && window.__EMBEDDED_STATE__.savedModels) || JSON.parse(localStorage.getItem(KEY_MODELS) || "null") || [
- { name: "Model A-101", sapTime: 1.27 },
- { name: "Model B-204", sapTime: 0.95 },
- { name: "Model C-310", sapTime: 1.45 }
+  { name: "Model A-101", sapTime: 1.27 },
+  { name: "Model B-204", sapTime: 0.95 },
+  { name: "Model C-310", sapTime: 1.45 }
 ];
+
 let savedDate = (window.__EMBEDDED_STATE__ && window.__EMBEDDED_STATE__.lastDate) || JSON.parse(localStorage.getItem(KEY_DATE) || "null") || {
- machine: "Taiwanese 5", year: new Date().getFullYear(), month: new Date().getMonth() + 1, day: 1
+  machine: "Taiwanese 5", year: new Date().getFullYear(), month: 10, day: 1
 };
 if (arToEnMachineMap[savedDate.machine]) savedDate.machine = arToEnMachineMap[savedDate.machine];
+if (savedDate.machine === "Taiwanese 4" && savedDate.month === 9) savedDate.month = 10;
+
 let curMach = machinesList.includes(savedDate.machine) ? savedDate.machine : "Taiwanese 5";
 let curY = savedDate.year || new Date().getFullYear();
 let curM = savedDate.month || (new Date().getMonth() + 1);
 let curD = savedDate.day || 1;
+
 function getMKey(y = curY, m = curM) { return `${y}-${String(m).padStart(2, "0")}`; }
 function getMaxDays(y = curY, m = curM) { return Math.max(30, new Date(y, m, 0).getDate()); }
 function getColor(v) { return v >= TARGET_OEE ? "#10b981" : (v >= 65 ? "#f59e0b" : "#ef4444"); }
+
 function saveAll() {
- try {
-   localStorage.setItem(KEY_DB, JSON.stringify(db));
-   localStorage.setItem(KEY_MODELS, JSON.stringify(savedModels));
-   localStorage.setItem(KEY_DATE, JSON.stringify({ machine: curMach, year: curY, month: curM, day: curD }));
- } catch (e) {}
+  try {
+    localStorage.setItem(KEY_DB, JSON.stringify(db));
+    localStorage.setItem(KEY_MODELS, JSON.stringify(savedModels));
+    localStorage.setItem(KEY_DATE, JSON.stringify({ machine: curMach, year: curY, month: curM, day: curD }));
+  } catch (e) {}
 }
+
 function switchTab(tabId, btn) {
- document.querySelectorAll(".tab-view").forEach(el => el.classList.remove("active"));
- document.getElementById("tab-" + tabId).classList.add("active");
- document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
- btn.classList.add("active");
- if (tabId === "chart") renderChart();
+  document.querySelectorAll(".tab-view").forEach(el => el.classList.remove("active"));
+  document.getElementById("tab-" + tabId).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(el => el.classList.remove("active"));
+  btn.classList.add("active");
+  if (tabId === "chart") renderChart();
+  if (tabId === "loss") renderLossCharts();
 }
+
 function initSelectors() {
- document.getElementById("selMachine").innerHTML = machinesList.map(m =>
-   `<option value="${m}" ${m === curMach ? 'selected' : ''}>Machine: ${m}</option>`).join("");
- document.getElementById("selYear").innerHTML = [2025,2026,2027,2028,2029,2030].map(y =>
-   `<option value="${y}" ${y == curY ? 'selected' : ''}>${y}</option>`).join("");
- document.getElementById("selMonth").innerHTML = monthsEn.map((n, i) =>
-   `<option value="${i+1}" ${(i+1) == curM ? 'selected' : ''}>${n}</option>`).join("");
- fillDaysSelect();
+  document.getElementById("selMachine").innerHTML = machinesList.map(m =>
+    `<option value="${m}" ${m === curMach ? 'selected' : ''}>Machine: ${m}</option>`).join("");
+  document.getElementById("selYear").innerHTML = [2025,2026,2027,2028,2029,2030].map(y =>
+    `<option value="${y}" ${y == curY ? 'selected' : ''}>${y}</option>`).join("");
+  document.getElementById("selMonth").innerHTML = monthsEn.map((n, i) =>
+    `<option value="${i+1}" ${(i+1) == curM ? 'selected' : ''}>${n}</option>`).join("");
+  fillDaysSelect();
 }
+
 function fillDaysSelect() {
- const maxD = getMaxDays();
- if (curD > maxD) curD = maxD;
- let html = "";
- for (let d = 1; d <= maxD; d++) {
-   html += `<option value="${d}" ${d == curD ? 'selected' : ''}>Day ${d}</option>`;
- }
- document.getElementById("selDay").innerHTML = html;
+  const maxD = getMaxDays();
+  if (curD > maxD) curD = maxD;
+  let html = "";
+  for (let d = 1; d <= maxD; d++) {
+    html += `<option value="${d}" ${d == curD ? 'selected' : ''}>Day ${d}</option>`;
+  }
+  document.getElementById("selDay").innerHTML = html;
 }
+
 function onMachineChange() {
- curMach = document.getElementById("selMachine").value;
- if (!db[curMach]) db[curMach] = {};
- saveAll();
- renderAll();
+  curMach = document.getElementById("selMachine").value;
+  if (!db[curMach]) db[curMach] = {};
+  saveAll();
+  renderAll();
 }
+
 function onDateChange() {
- curY = parseInt(document.getElementById("selYear").value);
- curM = parseInt(document.getElementById("selMonth").value);
- fillDaysSelect();
- saveAll();
- renderAll();
+  curY = parseInt(document.getElementById("selYear").value);
+  curM = parseInt(document.getElementById("selMonth").value);
+  fillDaysSelect();
+  saveAll();
+  renderAll();
 }
+
 function onDayChange() {
- curD = parseInt(document.getElementById("selDay").value);
- saveAll();
- renderAll();
+  curD = parseInt(document.getElementById("selDay").value);
+  saveAll();
+  renderAll();
 }
+
 function selectDay(d) {
- curD = d;
- document.getElementById("selDay").value = d;
- saveAll();
- renderAll();
+  curD = d;
+  document.getElementById("selDay").value = d;
+  saveAll();
+  renderAll();
 }
+
 function getDayRows(d = curD, mk = getMKey(), mach = curMach) {
- return (db[mach] && db[mach][mk] && db[mach][mk][d]) ? db[mach][mk][d] : [];
+  return (db[mach] && db[mach][mk] && db[mach][mk][d]) ? db[mach][mk][d] : [];
 }
+
 function calcRow(r) {
- const planned = Math.max(0, Number(r.planned) || 0);
- const breakdown = Math.max(0, Number(r.breakdown) || 0);
- const stoppage = Math.max(0, Number(r.stoppage) || 0);
- const netRun = Math.max(0, planned - (breakdown + stoppage));
- const sapTime = Math.max(0, Number(r.sapTime) || 0);
- const totalProd = Math.max(0, Number(r.totalProd) || 0);
- const scrap = Math.min(totalProd, Math.max(0, Number(r.scrap) || 0));
- const goodProd = totalProd - scrap;
- const stdMin = totalProd * sapTime;
- const avail = planned > 0 ? (netRun / planned) * 100 : 0;
- const perf = netRun > 0 ? (stdMin / netRun) * 100 : 0;
- const qual = totalProd > 0 ? (goodProd / totalProd) * 100 : 0;
- const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
- return { planned, breakdown, stoppage, netRun, sapTime, totalProd, scrap, goodProd, stdMin, avail, perf, qual, oee };
+  const planned = Math.max(0, Number(r.planned) || 0);
+  const breakdown = Math.max(0, Number(r.breakdown) || 0);
+  const stoppage = Math.max(0, Number(r.stoppage) || 0);
+  const downtime = breakdown + stoppage;
+  const netRun = Math.max(0, planned - downtime);
+  const sapTime = Math.max(0, Number(r.sapTime) || 0);
+  const totalProd = Math.max(0, Number(r.totalProd) || 0);
+  const scrap = Math.min(totalProd, Math.max(0, Number(r.scrap) || 0));
+  const goodProd = totalProd - scrap;
+  const stdMin = totalProd * sapTime;
+
+  const avail = planned > 0 ? (netRun / planned) * 100 : 0;
+  const perf = netRun > 0 ? (stdMin / netRun) * 100 : 0;
+  const qual = totalProd > 0 ? (goodProd / totalProd) * 100 : 0;
+  const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
+  return { planned, breakdown, stoppage, downtime, netRun, sapTime, totalProd, scrap, goodProd, stdMin, avail, perf, qual, oee };
 }
+
 function aggregate(list) {
- let planned = 0, netRun = 0, stdMin = 0, totalProd = 0, goodProd = 0, breakdown = 0, stoppage = 0;
- list.forEach(r => {
-   const c = calcRow(r);
-   planned += c.planned; netRun += c.netRun; stdMin += c.stdMin;
-   totalProd += c.totalProd; goodProd += c.goodProd;
-   breakdown += c.breakdown; stoppage += c.stoppage;
- });
- const hasData = list.length > 0 && planned > 0;
- const avail = planned > 0 ? (netRun / planned) * 100 : 0;
- const perf = netRun > 0 ? (stdMin / netRun) * 100 : 0;
- const qual = totalProd > 0 ? (goodProd / totalProd) * 100 : 0;
- const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
- return { hasData, planned, netRun, stdMin, totalProd, goodProd, scrap: totalProd - goodProd, avail, perf, qual, oee };
+  let planned = 0, netRun = 0, stdMin = 0, totalProd = 0, goodProd = 0, breakdown = 0, stoppage = 0;
+  list.forEach(r => {
+    const c = calcRow(r);
+    planned += c.planned; netRun += c.netRun; stdMin += c.stdMin;
+    totalProd += c.totalProd; goodProd += c.goodProd;
+    breakdown += c.breakdown; stoppage += c.stoppage;
+  });
+  const hasData = list.length > 0 && planned > 0;
+  const avail = planned > 0 ? (netRun / planned) * 100 : 0;
+  const perf = netRun > 0 ? (stdMin / netRun) * 100 : 0;
+  const qual = totalProd > 0 ? (goodProd / totalProd) * 100 : 0;
+  const oee = (avail / 100) * (perf / 100) * (qual / 100) * 100;
+  return { hasData, planned, netRun, stdMin, totalProd, goodProd, scrap: totalProd - goodProd, breakdown, stoppage, downtime: breakdown + stoppage, avail, perf, qual, oee };
 }
+
 function getCumUpTo(dayLimit, mk = getMKey(), mach = curMach) {
- let all = [], daysCount = 0;
- for (let d = 1; d <= dayLimit; d++) {
-   const r = getDayRows(d, mk, mach);
-   if (r.length > 0) { all = all.concat(r); daysCount++; }
- }
- const res = aggregate(all);
- res.daysCount = daysCount;
- return res;
+  let all = [], daysCount = 0;
+  for (let d = 1; d <= dayLimit; d++) {
+    const r = getDayRows(d, mk, mach);
+    if (r.length > 0) { all = all.concat(r); daysCount++; }
+  }
+  const res = aggregate(all);
+  res.daysCount = daysCount;
+  return res;
 }
+
 function addRowWithModel(name = "Model A-101", sapTime = 1.27) {
- const mk = getMKey();
- if (!db[curMach]) db[curMach] = {};
- if (!db[curMach][mk]) db[curMach][mk] = {};
- if (!db[curMach][mk][curD]) db[curMach][mk][curD] = [];
- const used = db[curMach][mk][curD].map(x => x.shift);
- const nextShift = !used.includes("A") ? "A" : (!used.includes("B") ? "B" : "C");
- db[curMach][mk][curD].push({
-   id: Date.now() + Math.random(),
-   shift: nextShift, model: name, planned: 420, sapTime: sapTime,
-   totalProd: 260, scrap: 8, breakdown: 25, stoppage: 20
- });
- saveAll();
- renderAll();
+  const mk = getMKey();
+  if (!db[curMach]) db[curMach] = {};
+  if (!db[curMach][mk]) db[curMach][mk] = {};
+  if (!db[curMach][mk][curD]) db[curMach][mk][curD] = [];
+  const used = db[curMach][mk][curD].map(x => x.shift);
+  const nextShift = !used.includes("A") ? "A" : (!used.includes("B") ? "B" : "C");
+  db[curMach][mk][curD].push({
+    id: Date.now() + Math.random(),
+    shift: nextShift,
+    model: name,
+    planned: getShiftLimit(nextShift),
+    sapTime: sapTime,
+    totalProd: 260,
+    scrap: 8,
+    breakdown: 25,
+    breakdownTypes: ["Mechanical"],
+    stoppage: 20,
+    stoppageTypes: ["Mold Maint."]
+  });
+  saveAll();
+  renderAll();
 }
+
 function addRow() {
- const m = savedModels[0] || { name: "Model A-101", sapTime: 1.27 };
- addRowWithModel(m.name, m.sapTime);
+  const m = savedModels[0] || { name: "Model A-101", sapTime: 1.27 };
+  addRowWithModel(m.name, m.sapTime);
 }
+
 function updateRow(id, field, val) {
- const list = getDayRows();
- const row = list.find(x => x.id === id);
- if (!row) return;
- row[field] = (field === "shift" || field === "model") ? val : (parseFloat(val) || 0);
- saveAll();
- const c = calcRow(row);
- document.getElementById(`net_${id}`).textContent = c.netRun.toFixed(0) + "m";
- document.getElementById(`a_${id}`).textContent = c.avail.toFixed(0) + "%";
- document.getElementById(`p_${id}`).textContent = c.perf.toFixed(0) + "%";
- document.getElementById(`q_${id}`).textContent = c.qual.toFixed(0) + "%";
- const oeeEl = document.getElementById(`oee_${id}`);
- oeeEl.textContent = c.oee.toFixed(1) + "%";
- oeeEl.style.color = getColor(c.oee);
- renderSummaries();
+  const list = getDayRows();
+  const row = list.find(x => x.id === id);
+  if (!row) return;
+  if (field === "shift") {
+    const oldLim = getShiftLimit(row.shift);
+    row.shift = val;
+    if (Number(row.planned) === oldLim || Number(row.planned) === 420) {
+      row.planned = getShiftLimit(val);
+      const pEl = document.getElementById(`plan_${id}`);
+      if (pEl) pEl.value = row.planned;
+    }
+  } else if (field === "model") {
+    row.model = val;
+  } else {
+    row[field] = parseFloat(val) || 0;
+  }
+  saveAll();
+
+  const c = calcRow(row);
+  document.getElementById(`net_${id}`).textContent = c.netRun.toFixed(0) + "m";
+  document.getElementById(`a_${id}`).textContent = c.avail.toFixed(0) + "%";
+  document.getElementById(`p_${id}`).textContent = c.perf.toFixed(0) + "%";
+  document.getElementById(`q_${id}`).textContent = c.qual.toFixed(0) + "%";
+  const oeeEl = document.getElementById(`oee_${id}`);
+  oeeEl.textContent = c.oee.toFixed(1) + "%";
+  oeeEl.style.color = getColor(c.oee);
+
+  renderSummaries();
 }
+
+function toggleReasonChip(rowId, field, optVal) {
+  const list = getDayRows();
+  const row = list.find(x => x.id === rowId);
+  if (!row) return;
+  if (!Array.isArray(row[field])) row[field] = [];
+  if (row[field].includes(optVal)) {
+    row[field] = row[field].filter(v => v !== optVal);
+  } else {
+    row[field].push(optVal);
+  }
+  saveAll();
+  renderAll();
+}
+
 function deleteRow(id) {
- const mk = getMKey();
- if (!db[curMach] || !db[curMach][mk] || !db[curMach][mk][curD]) return;
- db[curMach][mk][curD] = db[curMach][mk][curD].filter(x => x.id !== id);
- if (db[curMach][mk][curD].length === 0) delete db[curMach][mk][curD];
- saveAll();
- renderAll();
+  const mk = getMKey();
+  if (!db[curMach] || !db[curMach][mk] || !db[curMach][mk][curD]) return;
+  db[curMach][mk][curD] = db[curMach][mk][curD].filter(x => x.id !== id);
+  if (db[curMach][mk][curD].length === 0) delete db[curMach][mk][curD];
+  saveAll();
+  renderAll();
 }
+
 function copyPrevDay() {
- if (curD <= 1) return alert("You are on Day 1 already.");
- const prev = getDayRows(curD - 1);
- if (!prev.length) return alert(`No recorded data for (${curMach}) on Day ${curD - 1}.`);
- const mk = getMKey();
- if (!db[curMach]) db[curMach] = {};
- if (!db[curMach][mk]) db[curMach][mk] = {};
- db[curMach][mk][curD] = prev.map(r => ({ ...r, id: Date.now() + Math.random() }));
- saveAll();
- renderAll();
+  if (curD <= 1) return alert("You are on Day 1 already.");
+  const prev = getDayRows(curD - 1);
+  if (!prev.length) return alert(`No recorded data for (${curMach}) on Day ${curD - 1}.`);
+  const mk = getMKey();
+  if (!db[curMach]) db[curMach] = {};
+  if (!db[curMach][mk]) db[curMach][mk] = {};
+  db[curMach][mk][curD] = prev.map(r => ({
+    ...r,
+    id: Date.now() + Math.random(),
+    breakdownTypes: Array.isArray(r.breakdownTypes) ? [...r.breakdownTypes] : [],
+    stoppageTypes: Array.isArray(r.stoppageTypes) ? [...r.stoppageTypes] : []
+  }));
+  saveAll();
+  renderAll();
 }
+
 function clearDay() {
- if (!confirm(`Clear Day ${curD} data for (${curMach})?`)) return;
- const mk = getMKey();
- if (db[curMach] && db[curMach][mk]) delete db[curMach][mk][curD];
- saveAll();
- renderAll();
+  if (!confirm(`Clear Day ${curD} data for (${curMach})?`)) return;
+  const mk = getMKey();
+  if (db[curMach] && db[curMach][mk]) delete db[curMach][mk][curD];
+  saveAll();
+  renderAll();
 }
+
 function renderKPIs(elId, m) {
- const arr = [
-   { l: "Total OEE", v: m.oee, s: `Good: ${m.goodProd}` },
-   { l: "Avail. A%", v: m.avail, s: `${m.netRun}/${m.planned}m` },
-   { l: "Perf. P%", v: m.perf, s: `${m.stdMin.toFixed(0)}m std` },
-   { l: "Quality Q%", v: m.qual, s: `Scrap: ${m.scrap}` }
- ];
- document.getElementById(elId).innerHTML = arr.map(k => `
-<div class="kpi-mini">
-<div class="lbl">${k.l}</div>
-<div class="val" style="color:${m.hasData ? getColor(k.v) : '#64748b'}">${m.hasData ? k.v.toFixed(1)+'%' : '--'}</div>
-<div class="sub">${k.s}</div>
-</div>
- `).join("");
+  const arr = [
+    { l: "Total OEE", v: m.oee, s: `Good: ${m.goodProd}` },
+    { l: "Avail. A%", v: m.avail, s: `${m.netRun}/${m.planned}m` },
+    { l: "Perf. P%", v: m.perf, s: `${m.stdMin.toFixed(0)}m std` },
+    { l: "Quality Q%", v: m.qual, s: `Scrap: ${m.scrap}` }
+  ];
+  document.getElementById(elId).innerHTML = arr.map(k => `
+    <div class="kpi-mini">
+      <div class="lbl">${k.l}</div>
+      <div class="val" style="color:${m.hasData ? getColor(k.v) : '#64748b'}">${m.hasData ? k.v.toFixed(1)+'%' : '--'}</div>
+      <div class="sub">${k.s}</div>
+    </div>
+  `).join("");
 }
+
 function renderSummaries() {
- const maxD = getMaxDays();
- let stripHTML = "", recorded = 0;
- for (let d = 1; d <= maxD; d++) {
-   const m = aggregate(getDayRows(d));
-   if (m.hasData) recorded++;
-   stripHTML += `
-<div class="day-pill ${d === curD ? 'active' : ''} ${m.hasData ? 'has-data' : ''}" onclick="selectDay(${d})">
-<b>${d}</b>
-<small style="color:${d === curD ? '#fff' : (m.hasData ? getColor(m.oee) : '#64748b')}">${m.hasData ? m.oee.toFixed(0)+'%' : '-'}</small>
-</div>
-   `;
- }
- document.getElementById("daysStrip").innerHTML = stripHTML;
- document.getElementById("monthSummaryTxt").textContent = `${curMach} • ${recorded} Days in ${getMKey()}`;
- const dM = aggregate(getDayRows(curD));
- const cM = getCumUpTo(curD);
- document.getElementById("dailyTitle").textContent = `${curMach} — Day ${curD} / Month ${curM}`;
- document.getElementById("dailySub").textContent = dM.hasData ? `Total: ${dM.totalProd} pcs` : "Not Recorded";
- renderKPIs("dailyKPIs", dM);
- document.getElementById("cumTitle").textContent = `Cumulative (Day 1 to Day ${curD})`;
- document.getElementById("cumSub").textContent = `From ${cM.daysCount} active day(s)`;
- renderKPIs("cumKPIs", cM);
- const dayList = getDayRows(curD);
- document.getElementById("shiftsBar").innerHTML = ["A","B","C"].map(s => {
-   const sm = aggregate(dayList.filter(x => x.shift === s));
-   const over = sm.planned > SHIFT_LIMIT;
-   return `
-<div class="shift-box" style="border-color:${over ? '#ef4444' : 'var(--border)'}">
-<div class="sh-title">Shift ${s}</div>
-<div class="sh-time" style="color:${over ? '#f87171' : 'var(--muted)'}">${sm.planned} / 420m ${over ? '⚠️' : ''}</div>
-<div class="sh-oee" style="color:${sm.hasData ? getColor(sm.oee) : '#64748b'}">${sm.hasData ? sm.oee.toFixed(1)+'%' : '--'}</div>
-</div>
-   `;
- }).join("");
- document.getElementById("monthLogTitle").textContent = `${curMach} — Month Log (${getMKey()})`;
- let tbl = "";
- for (let d = 1; d <= maxD; d++) {
-   const dm = aggregate(getDayRows(d));
-   const cm = getCumUpTo(d);
-   if (!dm.hasData && d !== curD) continue;
-   tbl += `
-<tr onclick="selectDay(${d});switchTab('daily', document.querySelectorAll('.nav-item')[0])" style="background:${d===curD?'rgba(59,130,246,0.15)':''}">
-<td><b>Day ${d}</b></td>
-<td>${dm.planned}m</td>
-<td>${dm.netRun}m</td>
-<td>${dm.totalProd}</td>
-<td>${dm.scrap}</td>
-<td style="font-weight:700;color:${dm.hasData?getColor(dm.oee):'#64748b'}">${dm.hasData?dm.oee.toFixed(1)+'%':'-'}</td>
-<td style="font-weight:800;color:#d8b4fe">${cm.hasData?cm.oee.toFixed(1)+'%':'-'}</td>
-</tr>
-   `;
- }
- document.getElementById("monthTableBody").innerHTML = tbl || `<tr><td colspan="7" style="padding:16px;color:var(--muted)">No days recorded for ${curMach} yet</td></tr>`;
- renderChart();
+  const maxD = getMaxDays();
+  let stripHTML = "", recorded = 0;
+  for (let d = 1; d <= maxD; d++) {
+    const m = aggregate(getDayRows(d));
+    if (m.hasData) recorded++;
+    stripHTML += `
+      <div class="day-pill ${d === curD ? 'active' : ''} ${m.hasData ? 'has-data' : ''}" onclick="selectDay(${d})">
+        <b>${d}</b>
+        <small style="color:${d === curD ? '#fff' : (m.hasData ? getColor(m.oee) : '#64748b')}">${m.hasData ? m.oee.toFixed(0)+'%' : '-'}</small>
+      </div>
+    `;
+  }
+  document.getElementById("daysStrip").innerHTML = stripHTML;
+  document.getElementById("monthSummaryTxt").textContent = `${curMach} • ${recorded} Days in ${getMKey()}`;
+
+  const dM = aggregate(getDayRows(curD));
+  const cM = getCumUpTo(curD);
+
+  document.getElementById("dailyTitle").textContent = `${curMach} — Day ${curD} / Month ${curM}`;
+  document.getElementById("dailySub").textContent = dM.hasData ? `Total: ${dM.totalProd} pcs` : "Not Recorded";
+  renderKPIs("dailyKPIs", dM);
+
+  document.getElementById("cumTitle").textContent = `Cumulative (Day 1 to Day ${curD})`;
+  document.getElementById("cumSub").textContent = `From ${cM.daysCount} active day(s)`;
+  renderKPIs("cumKPIs", cM);
+
+  const dayList = getDayRows(curD);
+  document.getElementById("shiftsBar").innerHTML = ["A","B","C"].map(s => {
+    const sm = aggregate(dayList.filter(x => x.shift === s));
+    const lim = getShiftLimit(s);
+    const over = sm.planned > lim;
+    return `
+      <div class="shift-box" style="border-color:${over ? '#ef4444' : 'var(--border)'}">
+        <div class="sh-title">Shift ${s} (${lim}m)</div>
+        <div class="sh-time" style="color:${over ? '#f87171' : 'var(--muted)'}">Net Plan: ${sm.planned}/${lim}m ${over ? '⚠️' : ''}</div>
+        <div class="sh-oee" style="color:${sm.hasData ? getColor(sm.oee) : '#64748b'}">${sm.hasData ? sm.oee.toFixed(1)+'%' : '--'}</div>
+      </div>
+    `;
+  }).join("");
+
+  document.getElementById("monthLogTitle").textContent = `${curMach} — Month Log (${getMKey()})`;
+  let tbl = "";
+  for (let d = 1; d <= maxD; d++) {
+    const dm = aggregate(getDayRows(d));
+    const cm = getCumUpTo(d);
+    if (!dm.hasData && d !== curD) continue;
+    tbl += `
+      <tr onclick="selectDay(${d});switchTab('daily', document.querySelectorAll('.nav-item')[0])" style="background:${d===curD?'rgba(59,130,246,0.15)':''}">
+        <td><b>Day ${d}</b></td>
+        <td>${dm.planned}m</td>
+        <td>${dm.netRun}m</td>
+        <td>${dm.totalProd}</td>
+        <td>${dm.scrap}</td>
+        <td style="font-weight:700;color:${dm.hasData?getColor(dm.oee):'#64748b'}">${dm.hasData?dm.oee.toFixed(1)+'%':'-'}</td>
+        <td style="font-weight:800;color:#d8b4fe">${cm.hasData?cm.oee.toFixed(1)+'%':'-'}</td>
+      </tr>
+    `;
+  }
+  const fullM = getCumUpTo(maxD);
+  if (fullM.hasData) {
+    tbl += `
+      <tr style="background:rgba(16,185,129,0.14);font-weight:800;border-top:2px solid #10b981">
+        <td style="color:#34d399">TOTAL (${fullM.daysCount}d)</td>
+        <td>${(fullM.planned/60).toFixed(1)}h</td>
+        <td>${(fullM.netRun/60).toFixed(1)}h</td>
+        <td>${fullM.totalProd}</td>
+        <td>${fullM.scrap}</td>
+        <td style="color:${getColor(fullM.oee)}">${fullM.oee.toFixed(1)}%</td>
+        <td style="color:#e9d5ff">${fullM.oee.toFixed(1)}%</td>
+      </tr>
+    `;
+  }
+  document.getElementById("monthTableBody").innerHTML = tbl || `<tr><td colspan="7" style="padding:16px;color:var(--muted)">No days recorded for ${curMach} yet</td></tr>`;
+  renderChart();
+  renderLossCharts();
 }
+
 // Pure Time Series Line Chart + Linear Regression Trend Line + 80% Target
 function renderChart() {
- const scope = document.getElementById("chartScope").value;
- const limitDay = scope === "upto" ? curD : getMaxDays();
- document.getElementById("chartHeaderTitle").textContent = `${curMach} (Day 1 to ${limitDay})`;
- const points = [];
- for (let d = 1; d <= limitDay; d++) {
-   const dm = aggregate(getDayRows(d));
-   points.push({ day: d, dayOEE: dm.hasData ? dm.oee : null });
- }
- const w = 360, h = 225, padL = 34, padR = 14, padT = 20, padB = 28;
- const pw = w - padL - padR, ph = h - padT - padB;
- const getX = (idx) => limitDay > 1 ? padL + (idx * (pw / (limitDay - 1))) : padL + pw / 2;
- const getY = (v) => padT + ph - (Math.min(100, Math.max(0, v)) / 100) * ph;
- let svg = "";
- [0, 25, 50, 80, 100].forEach(v => {
-   const y = getY(v);
-   const isT = v === TARGET_OEE;
-   svg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="${isT?'#10b981':'#293548'}" stroke-dasharray="${isT?'5,3':'2,2'}" stroke-width="${isT?1.5:1}"/>
-<text x="${padL-5}" y="${y+3}" fill="${isT?'#10b981':'#94a3b8'}" font-weight="${isT?'700':'400'}" font-size="9" text-anchor="end">${v}%</text>`;
- });
- let linePath = "", areaPath = "", firstX = null, lastX = null, dots = "";
- const baseY = getY(0);
- points.forEach((pt, idx) => {
-   const x = getX(idx);
-   if (pt.day === 1 || pt.day === limitDay || pt.day === curD || pt.day % 5 === 0) {
-     svg += `<text x="${x}" y="${h-6}" fill="${pt.day===curD?'#38bdf8':'#94a3b8'}" font-weight="${pt.day===curD?'700':'400'}" font-size="9" text-anchor="middle">${pt.day}</text>`;
-   }
-   if (pt.dayOEE !== null) {
-     const y = getY(pt.dayOEE);
-     if (linePath === "") { linePath = `M ${x} ${y}`; firstX = x; }
-     else { linePath += ` L ${x} ${y}`; }
-     lastX = x;
-     dots += `
-<circle cx="${x}" cy="${y}" r="${pt.day===curD?5:3.8}" fill="${getColor(pt.dayOEE)}" stroke="#090d16" stroke-width="1.5"/>
-<text x="${x}" y="${y-7}" fill="#f8fafc" font-size="8.5" font-weight="700" text-anchor="middle">${pt.dayOEE.toFixed(0)}%</text>
-     `;
-   }
- });
- if (linePath && firstX !== null && lastX !== null) {
-   areaPath = `${linePath} L ${lastX} ${baseY} L ${firstX} ${baseY} Z`;
- }
- let trendSVG = "";
- const validPts = points.filter(p => p.dayOEE !== null);
- if (validPts.length >= 2) {
-   let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-   const n = validPts.length;
-   validPts.forEach(p => {
-     sumX += p.day; sumY += p.dayOEE;
-     sumXY += p.day * p.dayOEE; sumX2 += p.day * p.day;
-   });
-   const denom = n * sumX2 - sumX * sumX;
-   if (denom !== 0) {
-     const a = (n * sumXY - sumX * sumY) / denom;
-     const b = (sumY - a * sumX) / n;
-     trendSVG = `<line x1="${getX(0)}" y1="${getY(a*1+b)}" x2="${getX(limitDay-1)}" y2="${getY(a*limitDay+b)}" stroke="#f97316" stroke-width="2" stroke-dasharray="4,4"/>`;
-   }
- }
- document.getElementById("mobileChartBox").innerHTML = `
-<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;overflow:visible">
-<defs>
-<linearGradient id="mGrad" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
-<stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
-</linearGradient>
-</defs>
-     ${svg}
-     ${areaPath ? `<path d="${areaPath}" fill="url(#mGrad)"/>` : ''}
-     ${trendSVG}
-     ${linePath ? `<path d="${linePath}" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
-     ${dots}
-</svg>
- `;
+  const scope = document.getElementById("chartScope").value;
+  const limitDay = scope === "upto" ? curD : getMaxDays();
+  document.getElementById("chartHeaderTitle").textContent = `${curMach} (Day 1 to ${limitDay})`;
+
+  const points = [];
+  for (let d = 1; d <= limitDay; d++) {
+    const dm = aggregate(getDayRows(d));
+    points.push({ day: d, dayOEE: dm.hasData ? dm.oee : null });
+  }
+
+  const w = 360, h = 230, padL = 34, padR = 14, padT = 20, padB = 28;
+  const pw = w - padL - padR, ph = h - padT - padB;
+  const getX = (idx) => limitDay > 1 ? padL + (idx * (pw / (limitDay - 1))) : padL + pw / 2;
+  const getY = (v) => padT + ph - (Math.min(100, Math.max(0, v)) / 100) * ph;
+
+  let svg = "";
+  [0, 25, 50, 80, 100].forEach(v => {
+    const y = getY(v);
+    const isT = v === TARGET_OEE;
+    svg += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="${isT?'#10b981':'#293548'}" stroke-dasharray="${isT?'5,3':'2,2'}" stroke-width="${isT?1.5:1}"/>
+            <text x="${padL-5}" y="${y+3}" fill="${isT?'#10b981':'#94a3b8'}" font-weight="${isT?'700':'400'}" font-size="9" text-anchor="end">${v}%</text>`;
+  });
+
+  let linePath = "", areaPath = "", firstX = null, lastX = null, dots = "";
+  const baseY = getY(0);
+
+  points.forEach((pt, idx) => {
+    const x = getX(idx);
+    if (pt.day === 1 || pt.day === limitDay || pt.day === curD || pt.day % 5 === 0) {
+      svg += `<text x="${x}" y="${h-6}" fill="${pt.day===curD?'#38bdf8':'#94a3b8'}" font-weight="${pt.day===curD?'700':'400'}" font-size="9" text-anchor="middle">${pt.day}</text>`;
+    }
+    if (pt.dayOEE !== null) {
+      const y = getY(pt.dayOEE);
+      if (linePath === "") { linePath = `M ${x} ${y}`; firstX = x; }
+      else { linePath += ` L ${x} ${y}`; }
+      lastX = x;
+      dots += `
+        <circle cx="${x}" cy="${y}" r="${pt.day===curD?5:3.8}" fill="${getColor(pt.dayOEE)}" stroke="#090d16" stroke-width="1.5"/>
+        <text x="${x}" y="${y-7}" fill="#f8fafc" font-size="8.5" font-weight="700" text-anchor="middle">${pt.dayOEE.toFixed(0)}%</text>
+      `;
+    }
+  });
+
+  if (linePath && firstX !== null && lastX !== null) {
+    areaPath = `${linePath} L ${lastX} ${baseY} L ${firstX} ${baseY} Z`;
+  }
+
+  let trendSVG = "";
+  const validPts = points.filter(p => p.dayOEE !== null);
+  if (validPts.length >= 2) {
+    let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    const n = validPts.length;
+    validPts.forEach(p => {
+      sumX += p.day; sumY += p.dayOEE;
+      sumXY += p.day * p.dayOEE; sumX2 += p.day * p.day;
+    });
+    const denom = n * sumX2 - sumX * sumX;
+    if (denom !== 0) {
+      const a = (n * sumXY - sumX * sumY) / denom;
+      const b = (sumY - a * sumX) / n;
+      trendSVG = `<line x1="${getX(0)}" y1="${getY(a*1+b)}" x2="${getX(limitDay-1)}" y2="${getY(a*limitDay+b)}" stroke="#f97316" stroke-width="2" stroke-dasharray="4,4"/>`;
+    }
+  }
+
+  document.getElementById("mobileChartBox").innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;overflow:visible">
+      <defs>
+        <linearGradient id="mGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+        </linearGradient>
+      </defs>
+      ${svg}
+      ${areaPath ? `<path d="${areaPath}" fill="url(#mGrad)"/>` : ''}
+      ${trendSVG}
+      ${linePath ? `<path d="${linePath}" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      ${dots}
+    </svg>
+  `;
 }
+
+// Monthly Loss Analysis on Mobile: Stoppage Pareto Chart (Hours) + Breakdown X-Bar Chart (Hours & %)
+function renderLossCharts() {
+  const mk = getMKey(), maxD = getMaxDays();
+  document.getElementById("mParetoTitle").textContent = `Stoppage Pareto (Hours) — ${curMach} (${mk})`;
+  document.getElementById("mBreakdownTitle").textContent = `Breakdown X-Bar (Hours & %) — ${curMach}`;
+
+  const stopMinMap = {};
+  STOPPAGE_OPTIONS.forEach(o => { stopMinMap[o] = 0; });
+  let unclassStopMin = 0;
+
+  const bdMinMap = { "Mechanical": 0, "Electrical": 0 };
+  let unclassBdMin = 0;
+
+  for (let d = 1; d <= maxD; d++) {
+    const rows = getDayRows(d, mk, curMach);
+    rows.forEach(r => {
+      const stMin = Math.max(0, Number(r.stoppage) || 0);
+      if (stMin > 0) {
+        const selSt = Array.isArray(r.stoppageTypes) ? r.stoppageTypes.filter(x => STOPPAGE_OPTIONS.includes(x)) : [];
+        if (selSt.length > 0) {
+          const share = stMin / selSt.length;
+          selSt.forEach(t => { stopMinMap[t] = (stopMinMap[t] || 0) + share; });
+        } else {
+          unclassStopMin += stMin;
+        }
+      }
+      const bdMin = Math.max(0, Number(r.breakdown) || 0);
+      if (bdMin > 0) {
+        const selBd = Array.isArray(r.breakdownTypes) ? r.breakdownTypes.filter(x => BREAKDOWN_OPTIONS.includes(x)) : [];
+        if (selBd.length > 0) {
+          const share = bdMin / selBd.length;
+          selBd.forEach(t => { bdMinMap[t] = (bdMinMap[t] || 0) + share; });
+        } else {
+          unclassBdMin += bdMin;
+        }
+      }
+    });
+  }
+
+  // 1) Stoppage Pareto SVG
+  const paretoList = Object.keys(stopMinMap).map(k => ({ name: k, hours: stopMinMap[k] / 60 }));
+  if (unclassStopMin > 0) paretoList.push({ name: "Unclassified", hours: unclassStopMin / 60 });
+  paretoList.sort((a, b) => b.hours - a.hours);
+
+  const totalStopHrs = paretoList.reduce((acc, x) => acc + x.hours, 0);
+  let cumH = 0;
+  paretoList.forEach(item => {
+    cumH += item.hours;
+    item.sharePct = totalStopHrs > 0 ? (item.hours / totalStopHrs) * 100 : 0;
+    item.cumPct = totalStopHrs > 0 ? (cumH / totalStopHrs) * 100 : 0;
+  });
+
+  const pw = 360, ph = 240, pL = 34, pR = 32, pT = 20, pB = 56;
+  const plotW = pw - pL - pR, plotH = ph - pT - pB;
+  const maxItemH = paretoList.reduce((mx, x) => Math.max(mx, x.hours), 0);
+  const maxAxisH = Math.max(1, totalStopHrs * 1.12, maxItemH * 1.15);
+  const getPY_H = (hVal) => pT + plotH - (Math.min(maxAxisH, Math.max(0, hVal)) / maxAxisH) * plotH;
+  const getPY_P = (pct) => pT + plotH - (Math.min(100, Math.max(0, pct)) / 100) * plotH;
+
+  let pGrid = "";
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => {
+    const y = pT + plotH - f * plotH;
+    pGrid += `
+      <line x1="${pL}" y1="${y}" x2="${pw-pR}" y2="${y}" stroke="#293548" stroke-dasharray="2,2" stroke-width="1"/>
+      <text x="${pL-4}" y="${y+3}" fill="#94a3b8" font-size="8.5" text-anchor="end">${(maxAxisH*f).toFixed(1)}h</text>
+      <text x="${pw-pR+4}" y="${y+3}" fill="#38bdf8" font-size="8.5" text-anchor="start">${Math.round(f*100)}%</text>
+    `;
+  });
+  const y80 = getPY_P(80);
+  pGrid += `<line x1="${pL}" y1="${y80}" x2="${pw-pR}" y2="${y80}" stroke="#ef4444" stroke-dasharray="4,3" stroke-width="1.2"/>`;
+
+  const slotW = plotW / paretoList.length;
+  const barW = Math.min(26, slotW * 0.65);
+  let pBars = "", pLine = "", pDots = "";
+
+  paretoList.forEach((item, idx) => {
+    const cx = pL + idx * slotW + slotW / 2;
+    const by = getPY_H(item.hours);
+    const bh = (pT + plotH) - by;
+    pBars += `
+      <rect x="${cx - barW/2}" y="${by}" width="${barW}" height="${Math.max(1, bh)}" rx="3" fill="rgba(245,158,11,0.75)" stroke="#f59e0b"/>
+      <text x="${cx}" y="${by - 4}" fill="#fde68a" font-size="8" font-weight="700" text-anchor="middle">${item.hours > 0 ? item.hours.toFixed(1)+'h' : ''}</text>
+      <text x="${cx}" y="${ph - 22}" fill="#cbd5e1" font-size="8" font-weight="600" text-anchor="middle" transform="rotate(-28, ${cx}, ${ph - 22})">${item.name}</text>
+    `;
+    if (totalStopHrs > 0) {
+      const py = getPY_P(item.cumPct);
+      pLine += (pLine === "" ? `M ${cx} ${py}` : ` L ${cx} ${py}`);
+      pDots += `<circle cx="${cx}" cy="${py}" r="3.2" fill="#38bdf8" stroke="#090d16" stroke-width="1.2"/>`;
+    }
+  });
+
+  document.getElementById("mobileParetoBox").innerHTML = `
+    <svg viewBox="0 0 ${pw} ${ph}" style="width:100%;height:100%;overflow:visible">
+      ${pGrid}
+      ${pBars}
+      ${pLine ? `<path d="${pLine}" fill="none" stroke="#38bdf8" stroke-width="2"/>` : ''}
+      ${pDots}
+    </svg>
+  `;
+  const topSt = paretoList[0] && paretoList[0].hours > 0 ? `${paretoList[0].name} (${paretoList[0].hours.toFixed(2)}h / ${paretoList[0].sharePct.toFixed(1)}%)` : "None";
+  document.getElementById("mobileParetoPills").innerHTML = `
+    <div class="loss-pill">Total Stoppages: <b>${totalStopHrs.toFixed(2)} hrs</b> (${(totalStopHrs*60).toFixed(0)}m)</div>
+    <div class="loss-pill">Top Cause: <b style="color:#fbbf24">${topSt}</b></div>
+  `;
+
+  // 2) Breakdown X-Bar SVG (Mechanical vs Electrical)
+  const mechH = bdMinMap["Mechanical"] / 60;
+  const elecH = bdMinMap["Electrical"] / 60;
+  const unclassH = unclassBdMin / 60;
+  const totalBdH = mechH + elecH + unclassH;
+  const mechP = totalBdH > 0 ? (mechH / totalBdH) * 100 : 0;
+  const elecP = totalBdH > 0 ? (elecH / totalBdH) * 100 : 0;
+  const unclassP = totalBdH > 0 ? (unclassH / totalBdH) * 100 : 0;
+  const xBarH = (mechH + elecH) / 2;
+
+  const bdItems = [
+    { name: "Mechanical", hours: mechH, pct: mechP, color: "#3b82f6", fill: "rgba(59,130,246,0.75)" },
+    { name: "Electrical", hours: elecH, pct: elecP, color: "#a855f7", fill: "rgba(168,85,247,0.75)" }
+  ];
+  if (unclassH > 0) bdItems.push({ name: "Unclassified", hours: unclassH, pct: unclassP, color: "#64748b", fill: "rgba(100,116,139,0.65)" });
+
+  const bw = 360, bhSvg = 220, bL = 36, bR = 16, bT = 24, bB = 36;
+  const bPlotW = bw - bL - bR, bPlotH = bhSvg - bT - bB;
+  const maxBdItem = bdItems.reduce((mx, x) => Math.max(mx, x.hours), 0);
+  const maxBdAxis = Math.max(1, maxBdItem * 1.28, xBarH * 1.35);
+  const getBY = (hVal) => bT + bPlotH - (Math.min(maxBdAxis, Math.max(0, hVal)) / maxBdAxis) * bPlotH;
+
+  let bGrid = "";
+  [0, 0.25, 0.5, 0.75, 1].forEach(f => {
+    const y = bT + bPlotH - f * bPlotH;
+    bGrid += `
+      <line x1="${bL}" y1="${y}" x2="${bw-bR}" y2="${y}" stroke="#293548" stroke-dasharray="2,2" stroke-width="1"/>
+      <text x="${bL-4}" y="${y+3}" fill="#94a3b8" font-size="8.5" text-anchor="end">${(maxBdAxis*f).toFixed(1)}h</text>
+    `;
+  });
+
+  const bSlot = bPlotW / bdItems.length;
+  const bWidth = Math.min(64, bSlot * 0.5);
+  let bBars = "";
+  bdItems.forEach((item, idx) => {
+    const cx = bL + idx * bSlot + bSlot / 2;
+    const topY = getBY(item.hours);
+    const barH = (bT + bPlotH) - topY;
+    bBars += `
+      <rect x="${cx - bWidth/2}" y="${topY}" width="${bWidth}" height="${Math.max(2, barH)}" rx="5" fill="${item.fill}" stroke="${item.color}" stroke-width="1.4"/>
+      <text x="${cx}" y="${topY - 6}" fill="#f8fafc" font-size="9.5" font-weight="800" text-anchor="middle">${item.hours.toFixed(2)}h (${item.pct.toFixed(1)}%)</text>
+      <text x="${cx}" y="${bhSvg - 12}" fill="#e2e8f0" font-size="10.5" font-weight="700" text-anchor="middle">${item.name}</text>
+    `;
+  });
+
+  const yXB = getBY(xBarH);
+  const xBarSVG = `
+    <line x1="${bL}" y1="${yXB}" x2="${bw-bR}" y2="${yXB}" stroke="#10b981" stroke-width="2" stroke-dasharray="5,4"/>
+    <text x="${bw-bR-4}" y="${Math.max(12, yXB - 5)}" fill="#10b981" font-size="9" font-weight="700" text-anchor="end">X-Bar = ${xBarH.toFixed(2)}h</text>
+  `;
+
+  document.getElementById("mobileBreakdownBox").innerHTML = `
+    <svg viewBox="0 0 ${bw} ${bhSvg}" style="width:100%;height:100%;overflow:visible">
+      ${bGrid}
+      ${bBars}
+      ${xBarSVG}
+    </svg>
+  `;
+  document.getElementById("mobileBreakdownPills").innerHTML = `
+    <div class="loss-pill">Total Breakdowns: <b>${totalBdH.toFixed(2)}h</b> (${(totalBdH*60).toFixed(0)}m)</div>
+    <div class="loss-pill">Mech: <b style="color:#60a5fa">${mechH.toFixed(2)}h (${mechP.toFixed(1)}%)</b></div>
+    <div class="loss-pill">Elec: <b style="color:#c084fc">${elecH.toFixed(2)}h (${elecP.toFixed(1)}%)</b></div>
+    <div class="loss-pill">X-Bar: <b style="color:#10b981">${xBarH.toFixed(2)}h</b></div>
+  `;
+}
+
 function renderModels() {
- document.getElementById("quickModelsBar").innerHTML = savedModels.map(m =>
-   `<div class="model-chip" onclick="addRowWithModel('${m.name}', ${m.sapTime})">+ <b>${m.name}</b> (${m.sapTime}m)</div>`
- ).join("");
- document.getElementById("modelsManageList").innerHTML = savedModels.map((m, i) => `
-<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--card2);border-radius:8px;margin-bottom:6px;font-size:12.5px;">
-<span><b>${m.name}</b> — SAP Time: ${m.sapTime} min/pc</span>
-<button class="del-btn" style="padding:0 10px;height:28px" onclick="savedModels.splice(${i},1);saveAll();renderModels()">Del</button>
-</div>
- `).join("");
+  document.getElementById("quickModelsBar").innerHTML = savedModels.map(m =>
+    `<div class="model-chip" onclick="addRowWithModel('${m.name}', ${m.sapTime})">+ <b>${m.name}</b> (${m.sapTime}m)</div>`
+  ).join("");
+
+  document.getElementById("modelsManageList").innerHTML = savedModels.map((m, i) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:var(--card2);border-radius:8px;margin-bottom:6px;font-size:12.5px;">
+      <span><b>${m.name}</b> — SAP Time: ${m.sapTime} min/pc</span>
+      <button class="del-btn" style="padding:0 10px;height:28px" onclick="savedModels.splice(${i},1);saveAll();renderModels()">Del</button>
+    </div>
+  `).join("");
 }
+
 function addModelPreset() {
- const n = document.getElementById("mName").value.trim();
- const t = parseFloat(document.getElementById("mTime").value);
- if (!n || !t) return alert("Enter Model Code and SAP Time.");
- savedModels.push({ name: n, sapTime: t });
- document.getElementById("mName").value = "";
- document.getElementById("mTime").value = "";
- saveAll();
- renderModels();
+  const n = document.getElementById("mName").value.trim();
+  const t = parseFloat(document.getElementById("mTime").value);
+  if (!n || !t) return alert("Enter Model Code and SAP Time.");
+  savedModels.push({ name: n, sapTime: t });
+  document.getElementById("mName").value = "";
+  document.getElementById("mTime").value = "";
+  saveAll();
+  renderModels();
 }
+
 function renderAll() {
- renderModels();
- const list = getDayRows();
- const container = document.getElementById("runsContainer");
- if (!list.length) {
-   container.innerHTML = `<div class="run-card" style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">No runs recorded for <b>${curMach}</b> on <b>Day ${curD}</b>.<br>Tap a model chip above or the "+ Add Model" button below.</div>`;
- } else {
-   container.innerHTML = list.map(r => {
-     const c = calcRow(r);
-     return `
-<div class="run-card">
-<div class="run-top">
-<select onchange="updateRow(${r.id}, 'shift', this.value)">
-<option value="A" ${r.shift==='A'?'selected':''}>Shift A</option>
-<option value="B" ${r.shift==='B'?'selected':''}>Shift B</option>
-<option value="C" ${r.shift==='C'?'selected':''}>Shift C</option>
-</select>
-<input type="text" value="${r.model}" oninput="updateRow(${r.id}, 'model', this.value)" placeholder="Model Name">
-<button class="del-btn" onclick="deleteRow(${r.id})">✕</button>
-</div>
-<div class="run-inputs">
-<div class="field-box"><label>Planned (420m)</label><input type="number" inputmode="decimal" value="${r.planned}" oninput="updateRow(${r.id}, 'planned', this.value)"></div>
-<div class="field-box"><label>SAP (min/pc)</label><input type="number" step="0.01" inputmode="decimal" value="${r.sapTime}" oninput="updateRow(${r.id}, 'sapTime', this.value)"></div>
-<div class="field-box"><label>Total Prod.</label><input type="number" inputmode="decimal" value="${r.totalProd}" oninput="updateRow(${r.id}, 'totalProd', this.value)"></div>
-<div class="field-box"><label>Scrap (pcs)</label><input type="number" inputmode="decimal" value="${r.scrap}" oninput="updateRow(${r.id}, 'scrap', this.value)"></div>
-<div class="field-box"><label>Breakdown (m)</label><input type="number" inputmode="decimal" value="${r.breakdown}" oninput="updateRow(${r.id}, 'breakdown', this.value)"></div>
-<div class="field-box"><label>Stoppage (m)</label><input type="number" inputmode="decimal" value="${r.stoppage}" oninput="updateRow(${r.id}, 'stoppage', this.value)"></div>
-</div>
-<div class="run-results">
-<div>Net Time<b id="net_${r.id}">${c.netRun.toFixed(0)}m</b></div>
-<div>Avail.<b id="a_${r.id}">${c.avail.toFixed(0)}%</b></div>
-<div>Perf.<b id="p_${r.id}">${c.perf.toFixed(0)}%</b></div>
-<div>Quality<b id="q_${r.id}">${c.qual.toFixed(0)}%</b></div>
-<div>OEE<b id="oee_${r.id}" style="color:${getColor(c.oee)}">${c.oee.toFixed(1)}%</b></div>
-</div>
-</div>
-     `;
-   }).join("");
- }
- renderSummaries();
+  renderModels();
+  const list = getDayRows();
+  const container = document.getElementById("runsContainer");
+  if (!list.length) {
+    container.innerHTML = `<div class="run-card" style="text-align:center;color:var(--muted);padding:20px;font-size:13px;">No runs recorded for <b>${curMach}</b> on <b>Day ${curD}</b>.<br>Tap a model chip above or "+ Add Model" below.</div>`;
+  } else {
+    container.innerHTML = list.map(r => {
+      const c = calcRow(r);
+      const selBd = Array.isArray(r.breakdownTypes) ? r.breakdownTypes : [];
+      const selSt = Array.isArray(r.stoppageTypes) ? r.stoppageTypes : [];
+
+      const bdChipsHTML = BREAKDOWN_OPTIONS.map(opt => {
+        const active = selBd.includes(opt) ? "active-bd" : "";
+        return `<span class="r-chip ${active}" onclick="toggleReasonChip(${r.id}, 'breakdownTypes', '${opt}')">${opt}</span>`;
+      }).join("");
+
+      const stChipsHTML = STOPPAGE_OPTIONS.map(opt => {
+        const active = selSt.includes(opt) ? "active-st" : "";
+        return `<span class="r-chip ${active}" onclick="toggleReasonChip(${r.id}, 'stoppageTypes', '${opt}')">${opt}</span>`;
+      }).join("");
+
+      return `
+        <div class="run-card">
+          <div class="run-top">
+            <select onchange="updateRow(${r.id}, 'shift', this.value)">
+              <option value="A" ${r.shift==='A'?'selected':''}>Shift A (450m)</option>
+              <option value="B" ${r.shift==='B'?'selected':''}>Shift B (415m)</option>
+              <option value="C" ${r.shift==='C'?'selected':''}>Shift C (400m)</option>
+            </select>
+            <input type="text" value="${r.model}" oninput="updateRow(${r.id}, 'model', this.value)" placeholder="Model Name">
+            <button class="del-btn" onclick="deleteRow(${r.id})">✕</button>
+          </div>
+          <div class="run-inputs">
+            <div class="field-box"><label>Net Planned (m)</label><input id="plan_${r.id}" type="number" inputmode="decimal" value="${r.planned}" oninput="updateRow(${r.id}, 'planned', this.value)"></div>
+            <div class="field-box"><label>SAP (min/pc)</label><input type="number" step="0.01" inputmode="decimal" value="${r.sapTime}" oninput="updateRow(${r.id}, 'sapTime', this.value)"></div>
+            <div class="field-box"><label>Total Prod.</label><input type="number" inputmode="decimal" value="${r.totalProd}" oninput="updateRow(${r.id}, 'totalProd', this.value)"></div>
+            <div class="field-box"><label>Scrap (pcs)</label><input type="number" inputmode="decimal" value="${r.scrap}" oninput="updateRow(${r.id}, 'scrap', this.value)"></div>
+            <div class="field-box"><label>Breakdown (m)</label><input type="number" inputmode="decimal" value="${r.breakdown}" oninput="updateRow(${r.id}, 'breakdown', this.value)"></div>
+            <div class="field-box"><label>Stoppage (m)</label><input type="number" inputmode="decimal" value="${r.stoppage}" oninput="updateRow(${r.id}, 'stoppage', this.value)"></div>
+          </div>
+          <div class="reason-box">
+            <div class="reason-title"><span>Breakdown Type (Multi-Select):</span><span style="color:#93c5fd">${selBd.join(" + ") || "None"}</span></div>
+            <div class="reason-chips">${bdChipsHTML}</div>
+          </div>
+          <div class="reason-box">
+            <div class="reason-title"><span>Stoppage Type (Multi-Select):</span><span style="color:#fde68a">${selSt.length ? selSt.length + ' selected' : 'None'}</span></div>
+            <div class="reason-chips">${stChipsHTML}</div>
+          </div>
+          <div class="run-results">
+            <div>Net Run<b id="net_${r.id}">${c.netRun.toFixed(0)}m</b></div>
+            <div>Avail.<b id="a_${r.id}">${c.avail.toFixed(0)}%</b></div>
+            <div>Perf.<b id="p_${r.id}">${c.perf.toFixed(0)}%</b></div>
+            <div>Quality<b id="q_${r.id}">${c.qual.toFixed(0)}%</b></div>
+            <div>OEE<b id="oee_${r.id}" style="color:${getColor(c.oee)}">${c.oee.toFixed(1)}%</b></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+  renderSummaries();
 }
+
 function saveSelfContainedHTML() {
- const stateObj = { db, savedModels, lastDate: { machine: curMach, year: curY, month: curM, day: curD } };
- const scriptEl = document.getElementById("embeddedStateScript");
- scriptEl.textContent = `\nwindow.__EMBEDDED_STATE__ = ${JSON.stringify(stateObj)};\n`;
- const fullHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
- const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
- const a = document.createElement("a");
- a.href = URL.createObjectURL(blob);
- a.download = `SAP_OEE_iPhone_${curMach.replace(/\s+/g,'_')}_${getMKey()}.html`;
- a.click();
+  const stateObj = { db, savedModels, lastDate: { machine: curMach, year: curY, month: curM, day: curD } };
+  const scriptEl = document.getElementById("embeddedStateScript");
+  scriptEl.textContent = `\nwindow.__EMBEDDED_STATE__ = ${JSON.stringify(stateObj)};\n`;
+  const fullHTML = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+  const blob = new Blob([fullHTML], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `SAP_OEE_Mobile_${curMach.replace(/\s+/g,'_')}_${getMKey()}.html`;
+  a.click();
 }
+
 async function deliverFile(blob, name) {
- try {
-   const f = new File([blob], name, { type: blob.type });
-   if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: name }); return; }
- } catch (e) { if (e && e.name === "AbortError") return; }
- const a = document.createElement("a");
- a.href = URL.createObjectURL(blob); a.download = name;
- document.body.appendChild(a); a.click(); a.remove();
+  try {
+    const f = new File([blob], name, { type: blob.type });
+    if (navigator.canShare && navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: name }); return; }
+  } catch (e) { if (e && e.name === "AbortError") return; }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
 }
+
 function exportCSV() {
- const mk = getMKey(), maxD = getMaxDays();
- let csv = "\uFEFFMachine,Date,Day,Shift,Model,Planned (min),SAP Time (min/pc),Total Prod,Scrap,Good Prod,Breakdowns (min),Stoppages (min),Net Run (min),Avail%,Perf%,Qual%,OEE%,Cumulative OEE%\n";
- for (let d = 1; d <= maxD; d++) {
-   const rows = getDayRows(d, mk, curMach), cm = getCumUpTo(d, mk, curMach);
-   rows.forEach(r => {
-     const c = calcRow(r);
-     csv += `${curMach},${mk}-${String(d).padStart(2,'0')},Day ${d},${r.shift},${r.model},${c.planned},${c.sapTime},${c.totalProd},${c.scrap},${c.goodProd},${c.breakdown},${c.stoppage},${c.netRun},${c.avail.toFixed(1)}%,${c.perf.toFixed(1)}%,${c.qual.toFixed(1)}%,${c.oee.toFixed(1)}%,${cm.oee.toFixed(1)}%\n`;
-   });
- }
- deliverFile(new Blob([csv], { type: "text/csv;charset=utf-8" }), `SAP_OEE_${curMach.replace(/\s+/g,'_')}_${mk}.csv`);
+  const mk = getMKey(), maxD = getMaxDays();
+  let csv = "\uFEFFMachine,Date,Day,Shift,Model,Net Planned Time (min),SAP Time (min/pc),Total Prod,Scrap,Good Prod,Breakdowns (min),Breakdown Type,Stoppages (min),Stoppage Type,Net Run (min),Avail%,Perf%,Qual%,OEE%,Cumulative OEE%\n";
+  for (let d = 1; d <= maxD; d++) {
+    const rows = getDayRows(d, mk, curMach), cm = getCumUpTo(d, mk, curMach);
+    rows.forEach(r => {
+      const c = calcRow(r);
+      const bdT = Array.isArray(r.breakdownTypes) && r.breakdownTypes.length ? `"${r.breakdownTypes.join(" + ")}"` : "-";
+      const stT = Array.isArray(r.stoppageTypes) && r.stoppageTypes.length ? `"${r.stoppageTypes.join(" + ")}"` : "-";
+      csv += `${curMach},${mk}-${String(d).padStart(2,'0')},Day ${d},${r.shift},"${r.model}",${c.planned},${c.sapTime},${c.totalProd},${c.scrap},${c.goodProd},${c.breakdown},${bdT},${c.stoppage},${stT},${c.netRun},${c.avail.toFixed(1)}%,${c.perf.toFixed(1)}%,${c.qual.toFixed(1)}%,${c.oee.toFixed(1)}%,${cm.oee.toFixed(1)}%\n`;
+    });
+  }
+  deliverFile(new Blob([csv], { type: "text/csv;charset=utf-8" }), `SAP_OEE_${curMach.replace(/\s+/g,'_')}_${mk}.csv`);
 }
+
 function exportJSON() {
- deliverFile(new Blob([JSON.stringify({ db, savedModels })], { type: "application/json" }), `OEE_Backup_${getMKey()}.json`);
+  deliverFile(new Blob([JSON.stringify({ db, savedModels })], { type: "application/json" }), `OEE_Backup_${getMKey()}.json`);
 }
+
 function importJSON(e) {
- const f = e.target.files[0];
- if (!f) return;
- const r = new FileReader();
- r.onload = (ev) => {
-   try {
-     const p = JSON.parse(ev.target.result);
-     if (p.db) {
-       Object.keys(p.db).forEach(k => {
-         const mapped = arToEnMachineMap[k] || k;
-         if (!db[mapped]) db[mapped] = {};
-         Object.assign(db[mapped], p.db[k]);
-       });
-     }
-     if (p.savedModels) savedModels = p.savedModels;
-     saveAll(); renderAll(); alert("Backup restored successfully!");
-   } catch (err) { alert("Invalid backup file."); }
- };
- r.readAsText(f);
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = (ev) => {
+    try {
+      const p = JSON.parse(ev.target.result);
+      if (p.db) {
+        Object.keys(p.db).forEach(k => {
+          const mapped = arToEnMachineMap[k] || k;
+          if (!db[mapped]) db[mapped] = {};
+          Object.assign(db[mapped], p.db[k]);
+        });
+        migrateHistoricalShiftPlannedTimes(db);
+      }
+      if (p.savedModels) savedModels = p.savedModels;
+      saveAll(); renderAll(); alert("Backup restored & updated to Net Planned Shift Times (450/415/400m)!");
+    } catch (err) { alert("Invalid backup file."); }
+  };
+  r.readAsText(f);
 }
+
 saveAll();
 initSelectors();
 renderAll();
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
- window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 }
 </script>
 </body>
